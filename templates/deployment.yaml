@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-voting-app-deploy
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: voting-app-pod
+      app: demo-voting-app
+  
+  template:
+    metadata:
+      name: voting-app-pod
+      labels:
+        name: voting-app-pod
+        app: demo-voting-app
+    spec:
+      containers:
+        - name: voting-app
+          image: {{ .Values.image.vote }}:{{ .Values.image.tag }}
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-redis-deploy
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: redis-pod
+      app: demo-voting-app
+  
+  template:
+    metadata:
+      name: redis-pod
+      labels:
+        name: redis-pod
+        app: demo-voting-app
+    spec:
+      containers:
+        - name: redis
+          image: {{ .Values.image.redis }}
+          ports:
+            - containerPort: 6379
+          
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-worker-app-deploy
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: worker-app-pod
+      app: demo-voting-app
+  
+  template:
+    metadata:
+      name: worker-app-pod
+      labels:
+        name: worker-app-pod
+        app: demo-voting-app
+    spec:
+      containers:
+        - name: worker-app
+          image: {{ .Values.image.worker }}:{{ .Values.image.tag }}
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-postgres-deploy
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: postgres-pod
+      app: demo-voting-app
+  
+  template:
+    metadata:
+      name: postgres-pod
+      labels:
+        name: postgres-pod
+        app: demo-voting-app
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.image.postgres }}
+          ports:
+            - containerPort: 5432
+          env: 
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-result-app-deploy
+  labels:
+    app: demo-voting-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: result-app-pod
+      app: demo-voting-app
+  
+  template:
+    metadata:
+      name: result-app-pod
+      labels:
+        name: result-app-pod
+        app: demo-voting-app
+    spec:
+      containers:
+        - name: result-app
+          image: {{ .Values.image.result }}:{{ .Values.image.tag }}
+          ports:
+            - containerPort: 80
